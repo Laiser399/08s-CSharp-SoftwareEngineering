@@ -12,7 +12,7 @@ using Lab2.Ex;
 
 namespace Lab2.SpecialFigure
 {
-    public class SpecialFigure : Canvas, IFigure
+    public class SpecialFigure : Canvas
     {
         #region DependencyProperties
 

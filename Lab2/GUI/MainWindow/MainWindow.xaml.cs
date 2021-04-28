@@ -24,7 +24,7 @@ namespace Lab2.GUI
         {
             InitializeComponent();
 
-            DataContext = new MainWindowVM(specialFigure);
+            DataContext = new MainWindowVM();
         }
     }
 }

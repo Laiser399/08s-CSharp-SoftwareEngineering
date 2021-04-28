@@ -93,6 +93,9 @@ namespace Lab2.GUI
             => _commandsHistory ?? (_commandsHistory = new ObservableCollection<HistoryCommandVM>());
 
 
+        private FigureVM _figureVM;
+        public FigureVM FigureVM => _figureVM ?? (_figureVM = new FigureVM());
+
         // TODO delete
         private RelayCommand _testCmd;
         public RelayCommand TestCmd
@@ -108,37 +111,33 @@ namespace Lab2.GUI
 
         private ISimpleCommand _changeFigureTypeCmd;
         private ISimpleCommand ChangeTypeCmd => _changeFigureTypeCmd ??
-            (_changeFigureTypeCmd = Decorate(new ChangeTypeCommand(_figure)));
+            (_changeFigureTypeCmd = Decorate(new ChangeTypeCommand(FigureVM)));
 
         private ISimpleCommand _changeRadiusCmd;
         private ISimpleCommand ChangeRadiusCmd => _changeRadiusCmd ??
-            (_changeRadiusCmd = Decorate(new ChangeRadiusCommand(_figure)));
+            (_changeRadiusCmd = Decorate(new ChangeRadiusCommand(FigureVM)));
 
         private ISimpleCommand _changePenColorCmd;
         private ISimpleCommand ChangePenColorCmd => _changePenColorCmd ??
-            (_changePenColorCmd = Decorate(new ChangePenColorCommand(_figure)));
+            (_changePenColorCmd = Decorate(new ChangePenColorCommand(FigureVM)));
 
         private ISimpleCommand _changeBrushColorCmd;
         private ISimpleCommand ChangeBrushColorCmd => _changeBrushColorCmd ??
-            (_changeBrushColorCmd = Decorate(new ChangeBrushColorCommand(_figure)));
+            (_changeBrushColorCmd = Decorate(new ChangeBrushColorCommand(FigureVM)));
 
         private ISimpleCommand _changeBorderThicknessCmd;
         private ISimpleCommand ChangeBorderThicknessCmd => _changeBorderThicknessCmd ??
-            (_changeBorderThicknessCmd = Decorate(new ChangeBorderThicknessCommand(_figure)));
+            (_changeBorderThicknessCmd = Decorate(new ChangeBorderThicknessCommand(FigureVM)));
 
         #endregion
 
-        private IFigure _figure;
-
-        public MainWindowVM(IFigure figure)
+        public MainWindowVM()
         {
-            _figure = figure;
-
-            FigureType = _figure.FigureType;
-            FigureRadius = _figure.FigureRadius;
-            PenColor = _figure.PenColor;
-            BrushColor = _figure.BrushColor;
-            BorderThickness = _figure.BorderThickness;
+            //FigureType = _figure.FigureType;
+            //FigureRadius = _figure.FigureRadius;
+            //PenColor = _figure.PenColor;
+            //BrushColor = _figure.BrushColor;
+            //BorderThickness = _figure.BorderThickness;
 
         }
 
@@ -150,7 +149,7 @@ namespace Lab2.GUI
 
         private ISimpleCommand DecorateBySnaphotSaver(IFigureCommand command)
         {
-            SnapshotSaver snapshotSaver = new SnapshotSaver(_figure, command);
+            SnapshotSaver snapshotSaver = new SnapshotSaver(FigureVM, command);
             snapshotSaver.OnSnapshot += OnSnapshot;
             return snapshotSaver;
         }
