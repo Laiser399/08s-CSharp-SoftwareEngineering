@@ -1,4 +1,5 @@
-﻿using Lab2.SpecialFigure;
+﻿using Lab2.Abstractions;
+using Lab2.SpecialFigure;
 using Lab2.SpecialFigure.Commands;
 using Lab2.SpecialFigure.Commands.Abstractions;
 using System;
@@ -29,6 +30,35 @@ namespace Lab2.GUI
         private FigureVM _figureVM;
         public FigureVM FigureVM => _figureVM ?? (_figureVM = new FigureVM());
 
+        // Macro
+
+        private bool _isRecordingMacros = false;
+        public bool IsRecordingMacros
+        {
+            get => _isRecordingMacros;
+            set
+            {
+                _isRecordingMacros = value;
+                NotifyPropChanged(nameof(IsRecordingMacros));
+            }
+        }
+
+        public int MacrosCount => _chainCommandBuilder.CommandsCount;
+
+        private RelayCommand _startMacrosCmd;
+        public RelayCommand StartMacrosCmd
+            => _startMacrosCmd ?? (_startMacrosCmd = new RelayCommand(_ => StartMacro()));
+
+        private RelayCommand _applyMacrosCmd;
+        public RelayCommand ApplyMacrosCmd
+            => _applyMacrosCmd ?? (_applyMacrosCmd = new RelayCommand(_ => ApplyMacro()));
+
+        private RelayCommand _cancelMacrosCmd;
+        public RelayCommand CancelMacrosCmd
+            => _cancelMacrosCmd ?? (_cancelMacrosCmd = new RelayCommand(_ => CancelMacro()));
+
+        
+
         // TODO delete
         private RelayCommand _testCmd;
         public RelayCommand TestCmd
@@ -38,56 +68,73 @@ namespace Lab2.GUI
         public RelayCommand Test2Cmd
             => _test2Cmd ?? (_test2Cmd = new RelayCommand(_ => Test2()));
 
-        
-
         #endregion
 
         #region FigureCommands
 
         private ICommand _changeFigureTypeCmd;
         public ICommand ChangeTypeCmd => _changeFigureTypeCmd ??
-            (_changeFigureTypeCmd = Decorate(new ChangeTypeCommand(FigureVM)));
+            (_changeFigureTypeCmd = DecorateBoth(new ChangeTypeCommand(FigureVM)));
 
         private ICommand _changeRadiusCmd;
         public ICommand ChangeRadiusCmd => _changeRadiusCmd ??
-            (_changeRadiusCmd = Decorate(new ChangeRadiusCommand(FigureVM)));
+            (_changeRadiusCmd = DecorateBoth(new ChangeRadiusCommand(FigureVM)));
 
         private ICommand _changePenColorCmd;
         public ICommand ChangePenColorCmd => _changePenColorCmd ??
-            (_changePenColorCmd = Decorate(new ChangePenColorCommand(FigureVM)));
+            (_changePenColorCmd = DecorateBoth(new ChangePenColorCommand(FigureVM)));
 
         private ICommand _changeBrushColorCmd;
         public ICommand ChangeBrushColorCmd => _changeBrushColorCmd ??
-            (_changeBrushColorCmd = Decorate(new ChangeBrushColorCommand(FigureVM)));
+            (_changeBrushColorCmd = DecorateBoth(new ChangeBrushColorCommand(FigureVM)));
 
         private ICommand _changeBorderThicknessCmd;
         public ICommand ChangeBorderThicknessCmd => _changeBorderThicknessCmd ??
-            (_changeBorderThicknessCmd = Decorate(new ChangeBorderThicknessCommand(FigureVM)));
+            (_changeBorderThicknessCmd = DecorateBoth(new ChangeBorderThicknessCommand(FigureVM)));
 
         #endregion
+
+        private IChainCommandBuilder _chainCommandBuilder = new ChainCommandBuilder(5);
 
         public MainWindowVM()
         {
 
         }
 
-        private ICommand Decorate(IFigureCommand command)
+        private ICommand DecorateBoth(IFigureCommand command)
         {
-            ICommand result = DecorateBySnaphotSaver(command);
-            return DecorateByRecord(result);
+            ICommand snapshoted = DecorateBySnapshotSaver(command);
+            return DecorateByRecord(command, snapshoted);
         }
 
-        private ICommand DecorateBySnaphotSaver(IFigureCommand command)
+        private ICommand DecorateBySnapshotSaver(IFigureCommand command)
         {
             SnapshotSaver snapshotSaver = new SnapshotSaver(FigureVM, command);
             snapshotSaver.OnSnapshot += OnSnapshot;
             return snapshotSaver;
+
+            void OnSnapshot(object sender, SnapshotEventArgs args)
+            {
+                CommandsHistory.Add(new HistoryCommandVM(args));
+            }
         }
 
-        private ICommand DecorateByRecord(ICommand command)
+        private ICommand DecorateBySnapshotSaver(ICommand command, string commandName)
         {
-            return new RecordCommand(command, () => false, () => false, (_, _) => { });// TODO
+            SnapshotSaver snapshotSaver = new SnapshotSaver(FigureVM, command, commandName);
+            snapshotSaver.OnSnapshot += OnSnapshot;
+            return snapshotSaver;
 
+            void OnSnapshot(object sender, SnapshotEventArgs args)
+            {
+                CommandsHistory.Add(new HistoryCommandVM(args));
+            }
+        }
+
+        private ICommand DecorateByRecord(ICommand recordCmd, ICommand executeCmd)
+        {
+            return new RecordCommand(recordCmd, executeCmd, 
+                () => IsRecordingMacros, _chainCommandBuilder);
         }
 
         private void Undo()
@@ -100,9 +147,30 @@ namespace Lab2.GUI
             CommandsHistory.RemoveAt(CommandsHistory.Count - 1);
         }
 
-        private void OnSnapshot(object sender, SnapshotEventArgs args)
+        private void StartMacro()
         {
-            CommandsHistory.Add(new HistoryCommandVM(args));
+            if (IsRecordingMacros)
+                return;
+            IsRecordingMacros = true;
+        }
+
+        private void ApplyMacro()
+        {
+            if (MacrosCount > 0)
+            {
+                ICommand macroCommand = _chainCommandBuilder.Result;
+                macroCommand = DecorateBySnapshotSaver(macroCommand, "Macros");
+                macroCommand.Execute(null);
+                _chainCommandBuilder.Reset();
+            }
+            IsRecordingMacros = false;
+        }
+
+        private void CancelMacro()
+        {
+            IsRecordingMacros = false;
+            _chainCommandBuilder.Reset();
+            NotifyPropChanged(nameof(MacrosCount));
         }
 
 

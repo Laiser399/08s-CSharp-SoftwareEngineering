@@ -1,4 +1,5 @@
-﻿using Lab2.SpecialFigure.Commands.Abstractions;
+﻿using Lab2.Abstractions;
+using Lab2.SpecialFigure.Commands.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,41 +11,47 @@ namespace Lab2.SpecialFigure.Commands
 {
     public class RecordCommand : BaseCommand
     {
-        private ICommand _originCmd;
-        private Func<bool> _isRecord;
-        private Func<bool> _canRecord;
-        private Action<ICommand, object> _makeRecord;
+        private ICommand _recordCmd;
+        private ICommand _executeCmd;
 
-        public RecordCommand(ICommand originCmd, Func<bool> isRecord, 
-            Func<bool> canRecord, Action<ICommand, object> makeRecord)
+        private Func<bool> _isRecording;
+        private IChainCommandBuilder _chainCommandBuilder;
+
+        public RecordCommand(ICommand originCmd, Func<bool> isRecording, IChainCommandBuilder builder) :
+            this(originCmd, originCmd, isRecording, builder)
+        { }
+
+        public RecordCommand(ICommand recordCmd, ICommand executeCmd,
+            Func<bool> isRecording, IChainCommandBuilder builder)
         {
-            _originCmd = originCmd;
-            _isRecord = isRecord;
-            _canRecord = canRecord;
-            _makeRecord = makeRecord;
+            _recordCmd = recordCmd;
+            _executeCmd = executeCmd;
+            _isRecording = isRecording;
+            _chainCommandBuilder = builder;
         }
 
         public override bool CanExecute(object parameter)
         {
-            if (_isRecord())
+            if (_isRecording())
             {
-                return _canRecord() && _originCmd.CanExecute(parameter);
+                return _chainCommandBuilder.CanAddNext(_recordCmd, parameter)
+                    && _recordCmd.CanExecute(parameter);
             }
             else
             {
-                return _originCmd.CanExecute(parameter);
+                return _executeCmd.CanExecute(parameter);
             }
         }
 
-        public override void Execute(object arg)
+        public override void Execute(object parameter)
         {
-            if (_isRecord())
+            if (_isRecording())
             {
-                _makeRecord(_originCmd, arg);
+                _chainCommandBuilder.AddNext(_recordCmd, parameter);
             }
             else
             {
-                _originCmd.Execute(arg);
+                _executeCmd.Execute(parameter);
             }
         }
     }

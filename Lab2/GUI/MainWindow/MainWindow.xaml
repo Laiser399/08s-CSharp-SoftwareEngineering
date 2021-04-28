@@ -4,10 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab2"
+        xmlns:conv="clr-namespace:Lab2.GUI.Converters"
         xmlns:spf="clr-namespace:Lab2.SpecialFigure"
         xmlns:xtk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <conv:FalseToVisibleConverter x:Key="falseToVisibleConverter"/>
+        <conv:TrueToVisibleConverter x:Key="trueToVisibleConverter"/>
+    </Window.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200px"/>
@@ -136,7 +142,33 @@
                         Name="borderThicknessSlider"
                         Minimum="1" Maximum="30"/>
             </Grid>
-            
+
+            <Grid Margin="4 8" 
+                  Visibility="{Binding IsRecordingMacros, 
+                        Converter={StaticResource falseToVisibleConverter},
+                        ConverterParameter={x:Static Visibility.Collapsed}}">
+                <Button Content="Start macros"
+                        Command="{Binding StartMacrosCmd}"/>
+            </Grid>
+
+            <Grid Margin="4 8" 
+                  Visibility="{Binding IsRecordingMacros, 
+                        Converter={StaticResource trueToVisibleConverter},
+                        ConverterParameter={x:Static Visibility.Collapsed}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Content="Apply"
+                        Command="{Binding ApplyMacrosCmd}"/>
+
+                <Button Grid.Column="1"
+                        Content="Cancel"
+                        Command="{Binding CancelMacrosCmd}"/>
+            </Grid>
+
             <Button Content="Test" Command="{Binding TestCmd}"/>
             <Button Content="Test2" Command="{Binding Test2Cmd}"/>
         </StackPanel>

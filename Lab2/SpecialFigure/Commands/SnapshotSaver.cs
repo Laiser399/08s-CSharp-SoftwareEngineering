@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Lab2.SpecialFigure.Commands
 {
@@ -20,12 +21,22 @@ namespace Lab2.SpecialFigure.Commands
         public event EventHandler<SnapshotEventArgs> OnSnapshot;
 
         private IFigure _figure;
-        private IFigureCommand _originCommand;
+        private ICommand _originCommand;
+        private string _commandName;
 
-        public SnapshotSaver(IFigure figure, IFigureCommand originCommand)
+        public SnapshotSaver(IFigure figure, IFigureCommand originCommand) :
+            this(figure, originCommand, originCommand.CommandName)
         {
             _figure = figure;
             _originCommand = originCommand;
+            _commandName = originCommand.CommandName;
+        }
+
+        public SnapshotSaver(IFigure figure, ICommand originCommand, string commandName)
+        {
+            _figure = figure;
+            _originCommand = originCommand;
+            _commandName = commandName;
         }
 
         public override bool CanExecute(object parameter)
@@ -40,7 +51,7 @@ namespace Lab2.SpecialFigure.Commands
                 OnSnapshot(this, new SnapshotEventArgs() {
                     Figure = _figure,
                     Snapshot = _figure.MakeSnapshot(),
-                    CommandName = _originCommand.CommandName,
+                    CommandName = _commandName,
                     CommandArg = parameter
                 });
             }
