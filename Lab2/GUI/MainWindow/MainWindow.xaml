@@ -1,0 +1,144 @@
+﻿<Window x:Class="Lab2.GUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Lab2"
+        xmlns:spf="clr-namespace:Lab2.SpecialFigure"
+        xmlns:xtk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180px"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="340px"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0">
+            <Grid Margin="4 8">
+                <Button Content="Undo"
+                        Command="{Binding UndoCmd}"/>
+            </Grid>
+            <Grid Margin="4 8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Figure type:"
+                           VerticalAlignment="Center"/>
+
+                <ComboBox Grid.Column="1" SelectedValue="{Binding FigureType}" SelectedValuePath="Tag">
+                    <ComboBoxItem Tag="{x:Static spf:FigureType.Circle}" Content="Circle" />
+                    <ComboBoxItem Tag="{x:Static spf:FigureType.Triangle}" Content="Triangle"/>
+                    <ComboBoxItem Tag="{x:Static spf:FigureType.Square}" Content="Square"/>
+                    <ComboBoxItem Tag="{x:Static spf:FigureType.Pentagon}" Content="Pentagon"/>
+                    <ComboBoxItem Tag="{x:Static spf:FigureType.Hexagon}" Content="Hexagon"/>
+                </ComboBox>
+            </Grid>
+            <Grid Margin="4 8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Center">
+                    <Run Text="Radius:"/>
+                    <Run Text="{Binding FigureRadius, Mode=OneWay, StringFormat={}{0:F0}px}"/>
+                </TextBlock>
+
+                <Button Grid.Column="1" Content="Apply"
+                        HorizontalAlignment="Right"
+                        Command="{Binding ApplyRadiusCmd}"/>
+
+                <Slider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                        Minimum="5" Maximum="100" Value="{Binding FigureRadius}"/>
+            </Grid>
+            <Grid Margin="4 8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Border color:"
+                           VerticalAlignment="Center"/>
+                
+                <xtk:ColorPicker Grid.Column="1"
+                                 DisplayColorAndName="True" SelectedColor="{Binding PenColor}"/>
+            </Grid>
+            <Grid Margin="4 8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Fill color:"
+                           VerticalAlignment="Center"/>
+
+                <xtk:ColorPicker Grid.Column="1"
+                                 DisplayColorAndName="True" SelectedColor="{Binding BrushColor}"/>
+            </Grid>
+            <Grid Margin="4 8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           VerticalAlignment="Center">
+                    <Run Text="Border thickness:"/>
+                    <Run Text="{Binding BorderThickness, Mode=OneWay, StringFormat={}{0:F0}px}"/>
+                </TextBlock>
+
+                <Button Grid.Column="1" Content="Apply"
+                        HorizontalAlignment="Right"
+                        Command="{Binding ApplyBorderThicknessCmd}"/>
+
+                <Slider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                        Minimum="1" Maximum="30" Value="{Binding BorderThickness}"/>
+            </Grid>
+            
+            <Button Content="Test" Command="{Binding TestCmd}"/>
+            <Button Content="Test2" Command="{Binding Test2Cmd}"/>
+        </StackPanel>
+
+        <GridSplitter Grid.Column="1" 
+                      VerticalAlignment="Stretch" HorizontalAlignment="Center"
+                      Width="4px"/>
+
+        <spf:SpecialFigure Grid.Column="2" x:Name="specialFigure"
+                           FigureType="{Binding FigureType, Mode=OneWay}"/>
+        
+        <GridSplitter Grid.Column="3" 
+                      VerticalAlignment="Stretch" HorizontalAlignment="Center"
+                      Width="4px"/>
+
+        <ListView Grid.Column="4"
+                  ItemsSource="{Binding CommandsHistory}">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="Time" 
+                                        DisplayMemberBinding="{Binding Time}"/>
+                        <GridViewColumn Header="Command" Width="180px"
+                                        DisplayMemberBinding="{Binding CommandName}"/>
+                        <GridViewColumn Header="Arg" 
+                                        DisplayMemberBinding="{Binding CommandArg}"/>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>
