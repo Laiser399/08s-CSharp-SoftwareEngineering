@@ -20,7 +20,7 @@
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition/>
             <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="340px"/>
+            <ColumnDefinition Width="350px"/>
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0">
@@ -168,9 +168,6 @@
                         Content="Cancel"
                         Command="{Binding CancelMacrosCmd}"/>
             </Grid>
-
-            <Button Content="Test" Command="{Binding TestCmd}"/>
-            <Button Content="Test2" Command="{Binding Test2Cmd}"/>
         </StackPanel>
 
         <GridSplitter Grid.Column="1" 
@@ -188,20 +185,40 @@
                       VerticalAlignment="Stretch" HorizontalAlignment="Center"
                       Width="4px"/>
 
-        <ListView Grid.Column="4"
-                  ItemsSource="{Binding CommandsHistory}">
-            <ListView.View>
-                <GridView>
-                    <GridView.Columns>
-                        <GridViewColumn Header="Time" 
-                                        DisplayMemberBinding="{Binding Time}"/>
-                        <GridViewColumn Header="Command" Width="180px"
-                                        DisplayMemberBinding="{Binding CommandName}"/>
-                        <GridViewColumn Header="Arg" 
-                                        DisplayMemberBinding="{Binding CommandArg}"/>
-                    </GridView.Columns>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <Grid Grid.Column="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0"
+                    Content="Clear"
+                    Command="{Binding ClearHistoryCmd}"/>
+            
+            <Button Grid.Row="0" Grid.Column="1"
+                    Content="Save"
+                    Command="{Binding SaveHistoryCmd}"/>
+
+            <ListView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                      ItemsSource="{Binding CommandsHistory}">
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns>
+                            <GridViewColumn Header="Time" 
+                                            DisplayMemberBinding="{Binding Time}"/>
+                            <GridViewColumn Header="Command" Width="180px"
+                                            DisplayMemberBinding="{Binding CommandName}"/>
+                            <GridViewColumn Header="Arg" Width="100px"
+                                            DisplayMemberBinding="{Binding CommandArg}"/>
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+        
     </Grid>
 </Window>

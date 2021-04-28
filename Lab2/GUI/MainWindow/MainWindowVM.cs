@@ -2,13 +2,16 @@
 using Lab2.SpecialFigure;
 using Lab2.SpecialFigure.Commands;
 using Lab2.SpecialFigure.Commands.Abstractions;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -57,16 +60,16 @@ namespace Lab2.GUI
         public RelayCommand CancelMacrosCmd
             => _cancelMacrosCmd ?? (_cancelMacrosCmd = new RelayCommand(_ => CancelMacro()));
 
-        
+        // 
 
-        // TODO delete
-        private RelayCommand _testCmd;
-        public RelayCommand TestCmd
-            => _testCmd ?? (_testCmd = new RelayCommand(_ => Test()));
+        private RelayCommand _clearHistoryCmd;
+        public RelayCommand ClearHistoryCmd
+            => _clearHistoryCmd ?? (_clearHistoryCmd = new RelayCommand(_ => ClearHistory()));
 
-        private RelayCommand _test2Cmd;
-        public RelayCommand Test2Cmd
-            => _test2Cmd ?? (_test2Cmd = new RelayCommand(_ => Test2()));
+        private RelayCommand _saveHistoryCmd;
+        public RelayCommand SaveHistoryCmd
+            => _saveHistoryCmd ?? (_saveHistoryCmd = new RelayCommand(_ => SaveHistory()));
+
 
         #endregion
 
@@ -173,21 +176,48 @@ namespace Lab2.GUI
             NotifyPropChanged(nameof(MacrosCount));
         }
 
-
-
-
-        // TODO delete
-        private void Test()
+        private void ClearHistory()
         {
-
+            CommandsHistory.Clear();
         }
 
-        private void Test2()
+        private void SaveHistory()
         {
+            if (CommandsHistory.Count == 0)
+            {
+                MessageBox.Show("Nothing to save.");
+                return;
+            }
 
-            
+            string filePath;
+            using (var dialog = new CommonSaveFileDialog())
+            {
+                dialog.DefaultFileName = "commands history.txt";
+                dialog.DefaultExtension = "txt";
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                    filePath = dialog.FileName;
+                else
+                    return;
+            }
+
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(File.OpenWrite(filePath)))
+                {
+                    foreach (HistoryCommandVM item in CommandsHistory)
+                    {
+                        writer.WriteLine($"DateTime = {item.DateTime}");
+                        writer.WriteLine($"Command = {item.CommandName}");
+                        writer.WriteLine($"Arg = {item.CommandArg}");
+                        writer.WriteLine();
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Oops. Something went wrong...");
+            }
         }
-
 
 
     }
