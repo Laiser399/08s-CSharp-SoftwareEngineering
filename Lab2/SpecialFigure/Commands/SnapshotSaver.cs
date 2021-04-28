@@ -15,33 +15,37 @@ namespace Lab2.SpecialFigure.Commands
         public object CommandArg { get; init; }
     }
 
-    public class SnapshotSaver : ISimpleCommand
+    public class SnapshotSaver : BaseCommand
     {
-        private IFigureCommand _originCommand;
-
-        public IFigure Figure { get; private init; }
-
         public event EventHandler<SnapshotEventArgs> OnSnapshot;
+
+        private IFigure _figure;
+        private IFigureCommand _originCommand;
 
         public SnapshotSaver(IFigure figure, IFigureCommand originCommand)
         {
+            _figure = figure;
             _originCommand = originCommand;
-            Figure = figure;
         }
 
-        public void Execute(object arg)
+        public override bool CanExecute(object parameter)
+        {
+            return _originCommand.CanExecute(parameter);
+        }
+
+        public override void Execute(object parameter)
         {
             if (OnSnapshot is not null)
             {
                 OnSnapshot(this, new SnapshotEventArgs() {
-                    Figure = Figure,
-                    Snapshot = Figure.MakeSnapshot(),
+                    Figure = _figure,
+                    Snapshot = _figure.MakeSnapshot(),
                     CommandName = _originCommand.CommandName,
-                    CommandArg = arg
+                    CommandArg = parameter
                 });
             }
 
-            _originCommand.Execute(arg);
+            _originCommand.Execute(parameter);
         }
     }
 }

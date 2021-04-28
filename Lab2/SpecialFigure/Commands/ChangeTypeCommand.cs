@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Lab2.SpecialFigure.Commands
 {
-    public class ChangeTypeCommand : IFigureCommand
+    public class ChangeTypeCommand : BaseCommand, IFigureCommand
     {
         public string CommandName => "ChangeFigureType";
 
@@ -18,9 +18,14 @@ namespace Lab2.SpecialFigure.Commands
             Figure = figure;
         }
 
-        public void Execute(object arg)
+        public override bool CanExecute(object parameter)
         {
-            if (arg is FigureType figureType)
+            return parameter is FigureType;
+        }
+
+        public override void Execute(object parameter)
+        {
+            if (parameter is FigureType figureType)
                 Figure.FigureType = figureType;
         }
     }

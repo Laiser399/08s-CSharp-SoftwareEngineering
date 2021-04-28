@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Lab2.GUI
@@ -21,77 +22,9 @@ namespace Lab2.GUI
         public RelayCommand UndoCmd
             => _undoCmd ?? (_undoCmd = new RelayCommand(_ => Undo()));
 
-        private FigureType _figureType;
-        public FigureType FigureType
-        {
-            get => _figureType;
-            set
-            {
-                _figureType = value;
-                ChangeTypeCmd.Execute(value);
-                NotifyPropChanged(nameof(FigureType));
-            }
-        }
-
-        private double _figureRadius = 5;
-        public double FigureRadius
-        {
-            get => _figureRadius;
-            set
-            {
-                _figureRadius = value;
-                NotifyPropChanged(nameof(FigureRadius));
-            }
-        }
-
-        private RelayCommand _applyRadiusCmd;
-        public RelayCommand ApplyRadiusCmd
-            => _applyRadiusCmd ?? (_applyRadiusCmd = new RelayCommand(_ => ApplyRadius()));
-
-        private Color _penColor = Colors.Black;
-        public Color PenColor
-        {
-            get => _penColor;
-            set
-            {
-                _penColor = value;
-                ChangePenColorCmd.Execute(value);
-                NotifyPropChanged(nameof(PenColor));
-            }
-        }
-
-        private Color _brushColor = Colors.Transparent;
-        public Color BrushColor
-        {
-            get => _brushColor;
-            set
-            {
-                _brushColor = value;
-                ChangeBrushColorCmd.Execute(value);
-                NotifyPropChanged(nameof(BrushColor));
-            }
-        }
-
-        private double _borderThickness = 1;
-        public double BorderThickness
-        {
-            get => _borderThickness;
-            set
-            {
-                _borderThickness = value;
-                NotifyPropChanged(nameof(BorderThickness));
-            }
-        }
-
-        private RelayCommand _applyBorderThicknessCmd;
-        public RelayCommand ApplyBorderThicknessCmd
-            => _applyBorderThicknessCmd ?? (_applyBorderThicknessCmd = new RelayCommand(_ => ApplyBorderThickness()));
-
-
         private ObservableCollection<HistoryCommandVM> _commandsHistory;
         public ObservableCollection<HistoryCommandVM> CommandsHistory
             => _commandsHistory ?? (_commandsHistory = new ObservableCollection<HistoryCommandVM>());
-
 
         private FigureVM _figureVM;
         public FigureVM FigureVM => _figureVM ?? (_figureVM = new FigureVM());
@@ -105,58 +38,56 @@ namespace Lab2.GUI
         public RelayCommand Test2Cmd
             => _test2Cmd ?? (_test2Cmd = new RelayCommand(_ => Test2()));
 
+        
+
         #endregion
 
         #region FigureCommands
 
-        private ISimpleCommand _changeFigureTypeCmd;
-        private ISimpleCommand ChangeTypeCmd => _changeFigureTypeCmd ??
+        private ICommand _changeFigureTypeCmd;
+        public ICommand ChangeTypeCmd => _changeFigureTypeCmd ??
             (_changeFigureTypeCmd = Decorate(new ChangeTypeCommand(FigureVM)));
 
-        private ISimpleCommand _changeRadiusCmd;
-        private ISimpleCommand ChangeRadiusCmd => _changeRadiusCmd ??
+        private ICommand _changeRadiusCmd;
+        public ICommand ChangeRadiusCmd => _changeRadiusCmd ??
             (_changeRadiusCmd = Decorate(new ChangeRadiusCommand(FigureVM)));
 
-        private ISimpleCommand _changePenColorCmd;
-        private ISimpleCommand ChangePenColorCmd => _changePenColorCmd ??
+        private ICommand _changePenColorCmd;
+        public ICommand ChangePenColorCmd => _changePenColorCmd ??
             (_changePenColorCmd = Decorate(new ChangePenColorCommand(FigureVM)));
 
-        private ISimpleCommand _changeBrushColorCmd;
-        private ISimpleCommand ChangeBrushColorCmd => _changeBrushColorCmd ??
+        private ICommand _changeBrushColorCmd;
+        public ICommand ChangeBrushColorCmd => _changeBrushColorCmd ??
             (_changeBrushColorCmd = Decorate(new ChangeBrushColorCommand(FigureVM)));
 
-        private ISimpleCommand _changeBorderThicknessCmd;
-        private ISimpleCommand ChangeBorderThicknessCmd => _changeBorderThicknessCmd ??
+        private ICommand _changeBorderThicknessCmd;
+        public ICommand ChangeBorderThicknessCmd => _changeBorderThicknessCmd ??
             (_changeBorderThicknessCmd = Decorate(new ChangeBorderThicknessCommand(FigureVM)));
 
         #endregion
 
         public MainWindowVM()
         {
-            //FigureType = _figure.FigureType;
-            //FigureRadius = _figure.FigureRadius;
-            //PenColor = _figure.PenColor;
-            //BrushColor = _figure.BrushColor;
-            //BorderThickness = _figure.BorderThickness;
 
         }
 
-        private ISimpleCommand Decorate(IFigureCommand command)
+        private ICommand Decorate(IFigureCommand command)
         {
-            ISimpleCommand result = DecorateBySnaphotSaver(command);
+            ICommand result = DecorateBySnaphotSaver(command);
             return DecorateByRecord(result);
         }
 
-        private ISimpleCommand DecorateBySnaphotSaver(IFigureCommand command)
+        private ICommand DecorateBySnaphotSaver(IFigureCommand command)
         {
             SnapshotSaver snapshotSaver = new SnapshotSaver(FigureVM, command);
             snapshotSaver.OnSnapshot += OnSnapshot;
             return snapshotSaver;
         }
 
-        private ISimpleCommand DecorateByRecord(ISimpleCommand command)
+        private ICommand DecorateByRecord(ICommand command)
         {
-            return new RecordCommand(command, () => false, (_, _) => { });// TODO
+            return new RecordCommand(command, () => false, () => false, (_, _) => { });// TODO
+
         }
 
         private void Undo()
@@ -167,16 +98,6 @@ namespace Lab2.GUI
             HistoryCommandVM historyCommand = CommandsHistory[CommandsHistory.Count - 1];
             historyCommand.Snapshot.Restore();
             CommandsHistory.RemoveAt(CommandsHistory.Count - 1);
-        }
-
-        private void ApplyRadius()
-        {
-            ChangeRadiusCmd.Execute(FigureRadius);
-        }
-
-        private void ApplyBorderThickness()
-        {
-            ChangeBorderThicknessCmd.Execute(BorderThickness);
         }
 
         private void OnSnapshot(object sender, SnapshotEventArgs args)

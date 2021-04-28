@@ -10,7 +10,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="180px"/>
+            <ColumnDefinition Width="200px"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition/>
             <ColumnDefinition Width="auto"/>
@@ -26,18 +26,25 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Text="Figure type:"
                            VerticalAlignment="Center"/>
 
-                <ComboBox Grid.Column="1" SelectedValue="{Binding FigureType}" SelectedValuePath="Tag">
-                    <ComboBoxItem Tag="{x:Static spf:FigureType.Circle}" Content="Circle" />
+                <ComboBox Grid.Column="1" Name="figureTypeComboBox"
+                          SelectedValuePath="Tag" SelectedIndex="0">
+                    <ComboBoxItem Tag="{x:Static spf:FigureType.Circle}" Content="Circle"/>
                     <ComboBoxItem Tag="{x:Static spf:FigureType.Triangle}" Content="Triangle"/>
                     <ComboBoxItem Tag="{x:Static spf:FigureType.Square}" Content="Square"/>
                     <ComboBoxItem Tag="{x:Static spf:FigureType.Pentagon}" Content="Pentagon"/>
                     <ComboBoxItem Tag="{x:Static spf:FigureType.Hexagon}" Content="Hexagon"/>
                 </ComboBox>
+
+                <Button Grid.Column="2" Content=">"
+                        Padding="6 0"
+                        Command="{Binding ChangeTypeCmd}"
+                        CommandParameter="{Binding ElementName=figureTypeComboBox, Path=SelectedValue}"/>
             </Grid>
             <Grid Margin="4 8">
                 <Grid.ColumnDefinitions>
@@ -52,39 +59,56 @@
                 <TextBlock Grid.Column="0"
                            VerticalAlignment="Center">
                     <Run Text="Radius:"/>
-                    <Run Text="{Binding FigureRadius, Mode=OneWay, StringFormat={}{0:F0}px}"/>
+                    <Run Text="{Binding ElementName=radiusSlider, Path=Value, Mode=OneWay, StringFormat={}{0:F0}px}"/>
                 </TextBlock>
 
-                <Button Grid.Column="1" Content="Apply"
+                <Button Grid.Column="1" Content=">"
+                        Padding="6 0"
                         HorizontalAlignment="Right"
-                        Command="{Binding ApplyRadiusCmd}"/>
+                        Command="{Binding ChangeRadiusCmd}"
+                        CommandParameter="{Binding ElementName=radiusSlider, Path=Value}"/>
 
                 <Slider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-                        Minimum="5" Maximum="100" Value="{Binding FigureRadius}"/>
+                        Name="radiusSlider"
+                        Minimum="5" Maximum="100"/>
             </Grid>
             <Grid Margin="4 8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Text="Border color:"
                            VerticalAlignment="Center"/>
                 
-                <xtk:ColorPicker Grid.Column="1"
-                                 DisplayColorAndName="True" SelectedColor="{Binding PenColor}"/>
+                <xtk:ColorPicker Grid.Column="1" 
+                                 Name="penColorPicker"
+                                 DisplayColorAndName="True"/>
+
+                <Button Grid.Column="2" Content=">"
+                        Padding="6 0"
+                        Command="{Binding ChangePenColorCmd}"
+                        CommandParameter="{Binding ElementName=penColorPicker, Path=SelectedColor}"/>
             </Grid>
             <Grid Margin="4 8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Text="Fill color:"
                            VerticalAlignment="Center"/>
 
                 <xtk:ColorPicker Grid.Column="1"
-                                 DisplayColorAndName="True" SelectedColor="{Binding BrushColor}"/>
+                                 Name="brushColorPicker"
+                                 DisplayColorAndName="True"/>
+
+                <Button Grid.Column="2" Content=">"
+                        Padding="6 0"
+                        Command="{Binding ChangeBrushColorCmd}"
+                        CommandParameter="{Binding ElementName=brushColorPicker, Path=SelectedColor}"/>
             </Grid>
             <Grid Margin="4 8">
                 <Grid.ColumnDefinitions>
@@ -99,15 +123,18 @@
                 <TextBlock Grid.Column="0"
                            VerticalAlignment="Center">
                     <Run Text="Border thickness:"/>
-                    <Run Text="{Binding BorderThickness, Mode=OneWay, StringFormat={}{0:F0}px}"/>
+                    <Run Text="{Binding ElementName=borderThicknessSlider, Path=Value, Mode=OneWay, StringFormat={}{0:F0}px}"/>
                 </TextBlock>
 
-                <Button Grid.Column="1" Content="Apply"
+                <Button Grid.Column="1" Content=">"
+                        Padding="6 0"
                         HorizontalAlignment="Right"
-                        Command="{Binding ApplyBorderThicknessCmd}"/>
+                        Command="{Binding ChangeBorderThicknessCmd}"
+                        CommandParameter="{Binding ElementName=borderThicknessSlider, Path=Value}"/>
 
                 <Slider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                        Minimum="1" Maximum="30" Value="{Binding BorderThickness}"/>
+                        Name="borderThicknessSlider"
+                        Minimum="1" Maximum="30"/>
             </Grid>
             
             <Button Content="Test" Command="{Binding TestCmd}"/>

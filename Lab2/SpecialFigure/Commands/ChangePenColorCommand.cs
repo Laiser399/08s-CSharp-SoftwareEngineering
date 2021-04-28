@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 namespace Lab2.SpecialFigure.Commands
 {
-    public class ChangePenColorCommand : IFigureCommand
+    public class ChangePenColorCommand : BaseCommand, IFigureCommand
     {
         public string CommandName => "ChangePenColor";
 
@@ -19,9 +19,14 @@ namespace Lab2.SpecialFigure.Commands
             Figure = figure;
         }
 
-        public void Execute(object arg)
+        public override bool CanExecute(object parameter)
         {
-            if (arg is Color color)
+            return parameter is Color;
+        }
+
+        public override void Execute(object parameter)
+        {
+            if (parameter is Color color)
                 Figure.PenColor = color;
         }
     }

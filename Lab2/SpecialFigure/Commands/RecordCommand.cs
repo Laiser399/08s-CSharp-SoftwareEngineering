@@ -4,24 +4,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Lab2.SpecialFigure.Commands
 {
-    public class RecordCommand : ISimpleCommand
+    public class RecordCommand : BaseCommand
     {
-        private ISimpleCommand _originCmd;
+        private ICommand _originCmd;
         private Func<bool> _isRecord;
-        private Action<ISimpleCommand, object> _makeRecord;
+        private Func<bool> _canRecord;
+        private Action<ICommand, object> _makeRecord;
 
-        public RecordCommand(ISimpleCommand originCmd, Func<bool> isRecord, 
-            Action<ISimpleCommand, object> makeRecord)
+        public RecordCommand(ICommand originCmd, Func<bool> isRecord, 
+            Func<bool> canRecord, Action<ICommand, object> makeRecord)
         {
             _originCmd = originCmd;
             _isRecord = isRecord;
+            _canRecord = canRecord;
             _makeRecord = makeRecord;
         }
 
-        public void Execute(object arg)
+        public override bool CanExecute(object parameter)
+        {
+            if (_isRecord())
+            {
+                return _canRecord() && _originCmd.CanExecute(parameter);
+            }
+            else
+            {
+                return _originCmd.CanExecute(parameter);
+            }
+        }
+
+        public override void Execute(object arg)
         {
             if (_isRecord())
             {

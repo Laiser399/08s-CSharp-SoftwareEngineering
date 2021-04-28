@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Lab2.SpecialFigure.Commands
 {
-    public class ChangeBorderThicknessCommand : IFigureCommand
+    public class ChangeBorderThicknessCommand : BaseCommand, IFigureCommand
     {
         public string CommandName => "ChangeBorderThickness";
 
@@ -18,9 +18,17 @@ namespace Lab2.SpecialFigure.Commands
             Figure = figure;
         }
 
-        public void Execute(object arg)
+        public override bool CanExecute(object parameter)
         {
-            if (arg is double thickness)
+            if (parameter is double thickness)
+                return thickness >= 1 && thickness <= 100;
+            else
+                return false;
+        }
+
+        public override void Execute(object parameter)
+        {
+            if (parameter is double thickness)
                 Figure.BorderThickness = thickness;
         }
     }
