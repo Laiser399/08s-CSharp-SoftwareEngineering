@@ -7,8 +7,9 @@ namespace Lab1.Abstractions.Builders
 {
     interface IRAMBuilder
     {
-        void SetCapacity(int capacityMB);
+        void SetCapacityGB(int capacity);
         void SetRamType(RAMType type);
         void SetClockFrequencyMGz(int frequency);
+        void Reset();
     }
 }

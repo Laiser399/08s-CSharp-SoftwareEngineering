@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Lab1.Components
 {
-    record RAM(int CapacityMB, RAMType Type, int ClockFrequencyMGz) : IRAM
+    record RAM(int CapacityGB, RAMType Type, int ClockFrequencyMGz) : IRAM
     {
     }
 }

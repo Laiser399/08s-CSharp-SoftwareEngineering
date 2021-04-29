@@ -10,5 +10,6 @@ namespace Lab1.Abstractions.Builders
         void SetCapacityGB(int capacityGB);
         void SetRotationFrequency(RotationFrequency frequency);
         void SetClipboardVolume(ClipboardVolume clipboardVolume);
+        void Reset();
     }
 }

@@ -12,5 +12,6 @@ namespace Lab1.Abstractions.Builders
         void BuildSSDM2Slot();
         void BuildWiFi();
         void BuildBluetooth();
+        void Reset();
     }
 }

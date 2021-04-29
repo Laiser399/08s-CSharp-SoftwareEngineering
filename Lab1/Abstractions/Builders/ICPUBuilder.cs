@@ -10,5 +10,6 @@ namespace Lab1.Abstractions.Builders
         void SetCoresCount(int count);
         void SetClockFrequencyGGz(decimal frequency);
         void SetTechnicalProcess(TechnicalProcess technicalProcess);
+        void Reset();
     }
 }

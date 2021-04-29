@@ -10,5 +10,6 @@ namespace Lab1.Abstractions.Builders
         void SetMemoryCapacityGB(int capacityGB);
         void SetMemoryType(GPUMemoryType memoryType);
         void SetBitWidth(BitWidth bitWidth);
+        void Reset();
     }
 }

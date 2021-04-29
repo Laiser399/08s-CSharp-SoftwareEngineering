@@ -9,5 +9,6 @@ namespace Lab1.Abstractions.Builders
     {
         void SetPowerW(int powerW);
         void SetCertificate80PLUS(Certificate80PLUS certificate);
+        void Reset();
     }
 }

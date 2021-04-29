@@ -12,7 +12,7 @@ namespace Lab1.Abstractions.Components
 
     interface IRAM
     {
-        int CapacityMB { get; }
+        int CapacityGB { get; }
         RAMType Type { get; }
         int ClockFrequencyMGz { get; }
     }
