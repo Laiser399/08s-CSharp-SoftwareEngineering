@@ -18,7 +18,6 @@ namespace Lab3.Sortings
             base(keySelector, comparer)
         { }
 
-        // TODO where ICloneable or IPrototype
         public override void Sort(IList<T> items, SortDirection direction = SortDirection.Ascending)
         {
             KeyComparer<K> comparer = direction == SortDirection.Ascending

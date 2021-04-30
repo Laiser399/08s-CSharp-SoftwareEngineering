@@ -10,8 +10,6 @@ namespace Lab4.Builders
 {
     public class HumanValidatorBuilder : BaseValidatorBuilder<Human>
     {
-        // Methods: each for realisation of IValidator
-
         public void SetMinAge(uint minAge)
         {
             SetNext(new MinAgeValidator(minAge));
